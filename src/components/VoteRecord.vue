@@ -18,7 +18,7 @@ const
     else if (props.vote.value < 0) { return 'red'; }
     else { return 'primary' };
   }),
-  btnColor = computed(() => props.vote.undone ? "green" : "red"),
+  btnColor = computed(() => props.vote.undone ? 'green' : 'red'),
   value = computed(() => (props.vote.value >= 1 ? '+' : '') + props.vote.value.toString()),
   time = computed(() => props.vote.timeGenerated.toLocaleTimeString());
 </script>

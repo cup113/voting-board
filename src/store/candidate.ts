@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
-import { reactive } from 'vue';
-import useVoteStore from './vote';
+import { reactive, computed, type ComputedRef } from 'vue';
 
 export class Candidate {
   public alive: boolean = true;
@@ -16,25 +15,21 @@ export class Candidate {
 }
 
 const useCandidateStore = defineStore("candidate", () => {
-  const voteStore = useVoteStore();
-
   const
     candidates: Map<string, Candidate> = reactive(new Map([
       ["1", new Candidate("张三", "1")],
       ["2", new Candidate("李四", "2")]
-    ]));
-
-  function vote_for_id(id: string) {
-    const candidate = candidates.get(id);
-    if (candidate === undefined) {
-      return; // TODO
-    }
-    voteStore.vote_for(candidate, true);
-  }
+    ])),
+    rankedCandidates: ComputedRef<Candidate[]> = computed(() => {
+      var result = Array.from(candidates.values());
+      result.sort((a, b) => b.voteNum - a.voteNum);
+      return result;
+    })
+    ;
 
   return {
     candidates,
-    vote_for_id,
+    rankedCandidates,
   }
 });
 

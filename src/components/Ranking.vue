@@ -6,8 +6,14 @@ let candidateStore = useCandidateStore();
 </script>
 
 <template>
-  <div>
-    <RankCandidate v-for="[id, candidate] in candidateStore.candidates" :key="id" :candidate="candidate">
+  <TransitionGroup tag="div" name="list">
+    <RankCandidate v-for="candidate in candidateStore.rankedCandidates" :key="candidate.id" :candidate="candidate">
     </RankCandidate>
-  </div>
+  </TransitionGroup>
 </template>
+
+<style lang="scss" scoped>
+.list-move {
+  transition: all 1s ease;
+}
+</style>

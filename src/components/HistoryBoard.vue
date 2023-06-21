@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import useVoteStore from '../store/vote';
-import Record from './Record.vue';
+import VoteRecord from './VoteRecord.vue';
 const voteStore = useVoteStore();
 </script>
 
 <template>
   <TransitionGroup name="list" tag="div">
-    <Record v-for="vote in voteStore.voteHistory" :vote="vote" :key="vote.id"></Record>
+    <VoteRecord v-for="vote in voteStore.voteHistory" :vote="vote" :key="vote.id"></VoteRecord>
   </TransitionGroup>
 </template>
 
