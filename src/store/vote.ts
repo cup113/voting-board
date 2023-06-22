@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia';
 import type { Candidate } from './candidate';
-import { ref, reactive, computed, type Ref, type ComputedRef } from 'vue';
+import { reactive, computed, type Ref, type ComputedRef } from 'vue';
 import { nanoid } from 'nanoid';
 import useCandidateStore from './candidate';
+import { localStorageManager } from '.';
 
 export class Vote {
   public candidate: Candidate;
@@ -21,13 +22,15 @@ export class Vote {
 }
 
 const useVoteStore = defineStore("vote", () => {
-  const voteHistory: Vote[] = reactive([]),
+  const
+    voteHistory: Vote[] = reactive([]),
+    countVisibleHistory = localStorageManager.use("countVisibleHistory", 10),
     voteHistoryDisplay: ComputedRef<Vote[]> = computed(() => {
-      return voteHistory.slice(-10).reverse();
+      return voteHistory.slice(Math.max(0, voteHistory.length - countVisibleHistory.value)).reverse();
     }),
-    countInvalid: Ref<number> = ref(0),
-    unit: Ref<number> = ref(1),
-    countValid: Ref<number> = ref(0),
+    countInvalid: Ref<number> = localStorageManager.use("vote_countInvalid", 0),
+    unit: Ref<number> = localStorageManager.use("vote_unit", 1),
+    countValid: Ref<number> = localStorageManager.use("vote_countValid", 0),
     countTotal: ComputedRef<number> = computed(() => countValid.value + countInvalid.value)
     ;
 
@@ -95,6 +98,7 @@ const useVoteStore = defineStore("vote", () => {
   return {
     voteHistory,
     voteHistoryDisplay,
+    countVisibleHistory,
     unit,
     countInvalid,
     countValid,

@@ -6,7 +6,7 @@ const voteStore = useVoteStore();
 
 <template>
   <TransitionGroup name="list" tag="div">
-    <VoteRecord v-for="vote in voteStore.voteHistory" :vote="vote" :key="vote.id"></VoteRecord>
+    <VoteRecord v-for="vote in voteStore.voteHistoryDisplay" :vote="vote" :key="vote.id"></VoteRecord>
   </TransitionGroup>
 </template>
 
