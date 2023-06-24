@@ -11,7 +11,6 @@ interface SerializedCandidate {
 }
 
 export class Candidate {
-  public alive: boolean = true;
   public name: string;
   public readonly id: string;
   public voteNum: number = 0;
@@ -50,14 +49,15 @@ function use_candidates_local_storage(): RemovableRef<Map<string, Candidate>> {
           const parsed: SerializedCandidate[] = JSON.parse(raw);
           return new Map(parsed.map(obj => [obj.id, Candidate.fromObject(obj)]));
         } catch (e) {
-          console.log(e) // TODO deal with it
+          console.log(e) // TODO alert
           return initialValue;
         }
       },
       write(value) {
         return JSON.stringify([...value.values()]);
       },
-    }
+    },
+    managerParseJson: true,
   });
 }
 
@@ -71,9 +71,14 @@ const useCandidateStore = defineStore("candidate", () => {
     })
     ;
 
+  function get_candidate(id: string) {
+    return candidates.value.get(id);
+  }
+
   return {
     candidates,
     rankedCandidates,
+    get_candidate,
   }
 });
 

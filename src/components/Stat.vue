@@ -7,7 +7,8 @@ const voteStore = useVoteStore();
 
 <template>
   <v-chip>
-    总票数: <v-chip>{{ voteStore.countTotal }}</v-chip> (
-    <v-chip>{{ voteStore.countValid }}</v-chip> 有效 | <v-chip>{{ voteStore.countInvalid }}</v-chip> 无效)
+    总票数：<v-chip color="primary">{{ voteStore.countTotal }}</v-chip> (
+    <v-chip color="success">{{ voteStore.countValid }}</v-chip> 有效 |&nbsp;
+    <v-chip color="error">{{ voteStore.countInvalid }}</v-chip> 无效)
   </v-chip>
 </template>

@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue';
-import { VChip, VBtn } from 'vuetify/components';
+import { VRow, VBtn, VTextField } from 'vuetify/components';
+import { mdiMinus, mdiPlus } from '@mdi/js';
 
 const props = defineProps<{
   model: number
@@ -26,9 +27,11 @@ watch(val, n => {
 </script>
 
 <template>
-  <v-chip>
-    <v-btn class="px-1" variant="text" rounded="xl" @click="val = (model - 1).toString();">-</v-btn>
-    <input type="text" class="text-center" v-model="val">
-    <v-btn class="px-1" variant="text" rounded="xl" @click="val = (model + 1).toString();">+</v-btn>
-  </v-chip>
+  <v-row class="ma-0" align="center">
+    <v-btn class="px-1" variant="text" rounded="xl" @click="val = (model - 1).toString();" :icon="mdiMinus">
+    </v-btn>
+    <v-text-field label="单次投票数" type="number" v-model="val" class="inline"></v-text-field>
+    <v-btn class="px-1" variant="text" rounded="xl" @click="val = (model + 1).toString();" :icon="mdiPlus">
+    </v-btn>
+  </v-row>
 </template>

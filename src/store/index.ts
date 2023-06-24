@@ -18,7 +18,8 @@ const useStore = defineStore("index", () => {
       return num < 1 ? NaN : num;
     }),
     showSettings: Ref<boolean> = ref(false),
-    showImportExport: Ref<boolean> = ref(false)
+    showImportExport: Ref<boolean> = ref(false),
+    showEditCandidates: Ref<boolean> = ref(false)
     ;
   useTitle(() => `${subject.value} - 计票器`);
 
@@ -50,6 +51,7 @@ const useStore = defineStore("index", () => {
     rankSepWrapper,
     showSettings,
     showImportExport,
+    showEditCandidates,
     clear_vote_progress,
     export_data,
     import_data,

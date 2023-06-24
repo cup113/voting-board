@@ -11,7 +11,7 @@ import Settings from './components/Settings.vue';
   <v-app>
     <Subject></Subject>
     <v-main>
-      <HistoryBoard class="mx-4 mb-6"></HistoryBoard>
+      <HistoryBoard class="mx-4 my-6"></HistoryBoard>
       <v-divider></v-divider>
       <v-row class="ma-4">
         <v-col cols="12" md="6" lg="5">

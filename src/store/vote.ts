@@ -1,32 +1,68 @@
 import { defineStore } from 'pinia';
 import type { Candidate } from './candidate';
-import { reactive, computed, type Ref, type ComputedRef } from 'vue';
+import { computed, type Ref, type ComputedRef } from 'vue';
 import { nanoid } from 'nanoid';
 import useCandidateStore from './candidate';
 import { localStorageManager } from '.';
 
+interface SerializedVote {
+  candidateId: string;
+  value: number;
+  id: string;
+  undone: boolean;
+  timeGenerated: string;
+}
+
 export class Vote {
-  public candidate: Candidate;
+  public candidateId: string;
   public value: number;
   public id: string;
   public undone: boolean = false;
   public timeGenerated: Date;
 
-  constructor(candidate: Candidate, value: number) {
-    this.candidate = candidate;
+  constructor(candidateId: string, value: number) {
+    this.candidateId = candidateId;
     this.value = value;
     this.undone = false;
     this.id = nanoid();
-    this.timeGenerated = new Date();
+    this.timeGenerated = new Date(Math.floor(Date.now() / 1000) * 1000);
+  }
+
+  public toJSON(): SerializedVote {
+    return {
+      candidateId: this.candidateId,
+      value: this.value,
+      id: this.id,
+      undone: this.undone,
+      timeGenerated: this.timeGenerated.toLocaleString(),
+    }
+  }
+
+  static fromJSON(obj: SerializedVote): Vote {
+    const vote = new Vote(obj.candidateId, obj.value);
+    vote.undone = obj.undone;
+    vote.id = obj.id;
+    vote.timeGenerated = new Date(obj.timeGenerated);
+    return vote;
   }
 }
 
 const useVoteStore = defineStore("vote", () => {
   const
-    voteHistory: Vote[] = reactive([]),
+    voteHistory: Ref<Vote[]> = localStorageManager.use("voteHistory", [], {
+      serializer: {
+        read(raw) {
+          const arr = JSON.parse(raw) as SerializedVote[];
+          return arr.map(Vote.fromJSON);
+        },
+        write(value) {
+          return JSON.stringify(value);
+        },
+      }
+    }),
     countVisibleHistory = localStorageManager.use("countVisibleHistory", 10),
     voteHistoryDisplay: ComputedRef<Vote[]> = computed(() => {
-      return voteHistory.slice(Math.max(0, voteHistory.length - countVisibleHistory.value)).reverse();
+      return voteHistory.value.slice(Math.max(0, voteHistory.value.length - countVisibleHistory.value)).reverse();
     }),
     countInvalid: Ref<number> = localStorageManager.use("vote_countInvalid", 0),
     unit: Ref<number> = localStorageManager.use("vote_unit", 1),
@@ -70,29 +106,25 @@ const useVoteStore = defineStore("vote", () => {
     }
   }
 
-  function vote_for(candidate: Candidate, addToHistory: boolean, num?: number) {
+  function undo_redo_vote(vote: Vote) {
+    const valDiff = vote.undone ? vote.value : (-vote.value);
+    vote.undone = !vote.undone;
+    vote_for_id(vote.candidateId, false, valDiff);
+  }
+
+  function vote_for_id(id: string, addToHistory: boolean, num?: number) {
+    const candidateStore = useCandidateStore();
+    const candidate = candidateStore.get_candidate(id);
+    if (candidate === undefined) {
+      return; // TODO alert
+    }
     const voteDiff = num ?? unit.value;
     candidate.voteNum += voteDiff;
     countValid.value += voteDiff;
     if (addToHistory) {
-      voteHistory.push(new Vote(candidate, voteDiff));
+      voteHistory.value.push(new Vote(candidate.id, voteDiff));
     }
     change_rank(candidate, voteDiff);
-  }
-
-  function undo_redo_vote(vote: Vote) {
-    const valDiff = vote.undone ? vote.value : (-vote.value);
-    vote.undone = !vote.undone;
-    vote_for(vote.candidate, false, valDiff);
-  }
-
-  function vote_for_id(id: string) {
-    const candidateStore = useCandidateStore();
-    const candidate = candidateStore.candidates.get(id);
-    if (candidate === undefined) {
-      return; // TODO
-    }
-    vote_for(candidate, true);
   }
 
   return {

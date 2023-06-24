@@ -4,7 +4,7 @@ import useVoteStore from '../store/vote';
 import OperationCandidate from './OperationCandidate.vue';
 import NumberInput from './NumberInput.vue';
 import Stat from './Stat.vue';
-import { VBtn } from 'vuetify/components';
+import { VBtn, VRow } from 'vuetify/components';
 
 const voteStore = useVoteStore();
 const candidatesStore = useCandidateStore();
@@ -17,12 +17,12 @@ function change_vote_unit(val: number) {
 <template>
   <div>
     <Stat></Stat>
-    <div>
+    <div class="mt-4">
       <NumberInput :model="voteStore.unit" @c="change_vote_unit"></NumberInput>
-      <v-btn @click="voteStore.countInvalid += voteStore.unit;">废票</v-btn>
+      <v-btn @click="voteStore.countInvalid += voteStore.unit;" color="error">废票</v-btn>
     </div>
-    <div>
+    <v-row class="mt-2">
       <OperationCandidate :candidate="candidate" v-for="[id, candidate] in candidatesStore.candidates" :key="id"></OperationCandidate>
-    </div>
+    </v-row>
   </div>
 </template>
